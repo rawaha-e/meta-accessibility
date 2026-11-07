@@ -37,7 +37,7 @@ IMAGE_INSTALL:append = " espeak-ng speech-dispatcher brltty"
 Test it in QEMU:
 
 ```sh
-runqemu qemux86-64 nographic audio
+runqemu qemux86-64 nographic slirp snapshot
 espeak-ng "hello"
 spd-say "hello"
 ```
