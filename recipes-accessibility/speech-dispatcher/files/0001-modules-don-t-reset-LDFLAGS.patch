@@ -1,0 +1,24 @@
+From: rawaha-e <219735494+rawaha-e@users.noreply.github.com>
+Date: Sun, 8 Nov 2026 10:00:00 -0500
+Subject: [PATCH] modules: don't reset LDFLAGS
+
+"LDFLAGS =" in src/modules/Makefile.am throws away the LDFLAGS given to
+configure, so the output modules and libspeechd_module are linked
+without them (no GNU_HASH, no -Wl,-O1, no relro...).
+
+Only the line removal from the upstream commit is backported here; the
+rest of that commit adds the piper module.
+
+Upstream-Status: Backport [https://github.com/brailcom/speechd/commit/6511762e595e35c026c712ca8857053b29726647]
+Signed-off-by: rawaha-e <219735494+rawaha-e@users.noreply.github.com>
+---
+--- a/src/modules/Makefile.am
++++ b/src/modules/Makefile.am
+@@ -27,7 +27,6 @@
+ CLEANFILES = dummy-message.wav
+ 
+ inc_local = -I$(top_srcdir)/include -I$(top_srcdir)/src/common
+-LDFLAGS =
+ 
+ if DARWIN_HOST
+ LDFLAGS += -Wl,-U,_module_speak -Wl,-U,_module_speak_sync
