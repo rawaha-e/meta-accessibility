@@ -51,6 +51,10 @@ espeak-ng "hello"
 spd-say "hello"
 ```
 
+## Maintainer
+
+Rawaha El Houssayni <rawaha.elhoussayni@gmail.com>
+
 ## License
 
 MIT for the layer itself. Each program keeps its own license.
