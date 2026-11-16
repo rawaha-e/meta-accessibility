@@ -54,6 +54,10 @@ spd-say "hello"
 The liblouis command line tools (`lou_translate` and others) are in the
 `liblouis-tools` package.
 
+## Maintainer
+
+Rawaha El Houssayni <rawaha.elhoussayni@gmail.com>
+
 ## License
 
 MIT for the layer itself. Each program keeps its own license.
