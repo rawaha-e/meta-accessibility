@@ -12,11 +12,11 @@ pulseaudio, on the `wrynose` release series.
 - **pcaudiolib**: audio output library used by espeak-ng
 - **speech-dispatcher**: speech API that apps talk to
 - **dotconf**: config file parser used by speech-dispatcher
+- **liblouis**: braille translator and translation tables
 
 Planned, not in the layer yet:
 
 - **brltty**: braille displays and console screen reader (WIP)
-- **liblouis**: braille translation tables (WIP)
 - **orca**: screen reader for GTK desktops (WIP)
 
 None of these have an up-to-date recipe in the main OpenEmbedded layers,
@@ -50,6 +50,9 @@ runqemu qemux86-64 nographic slirp snapshot
 espeak-ng "hello"
 spd-say "hello"
 ```
+
+The liblouis command line tools (`lou_translate` and others) are in the
+`liblouis-tools` package.
 
 ## Maintainer
 
