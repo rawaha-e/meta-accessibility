@@ -1,0 +1,69 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: rawaha-e <219735494+rawaha-e@users.noreply.github.com>
+Date: Tue, 17 Nov 2026 07:07:27 -0500
+Subject: [PATCH 1/2] configure: find eSpeak NG with pkg-config
+
+eSpeak NG installs espeak-ng.pc, but configure only looks for its
+header under a fixed list of prefixes (/usr, /usr/local, /opt, ...).
+When cross-compiling that finds the build host's copy, or nothing, so
+the sysroot has to be passed with --with-espeak_ng=DIR. That path then
+ends up in brltty.pc as espeak_ng_root.
+
+Look it up through pkg-config first, the way speech-dispatcher already
+is, and fall back to searching the prefixes when there is no .pc file.
+The include and library flags come from pkg-config, and the root
+recorded in brltty.pc is /usr.
+
+Upstream-Status: Pending
+---
+ Drivers/Speech/eSpeak-NG/Makefile.in | 4 ++--
+ config.mk.in                         | 2 ++
+ configure.ac                         | 6 +++---
+ 3 files changed, 7 insertions(+), 5 deletions(-)
+
+diff --git a/Drivers/Speech/eSpeak-NG/Makefile.in b/Drivers/Speech/eSpeak-NG/Makefile.in
+index 69be33c..c087d75 100644
+--- a/Drivers/Speech/eSpeak-NG/Makefile.in
++++ b/Drivers/Speech/eSpeak-NG/Makefile.in
+@@ -21,9 +21,9 @@ DRIVER_NAME = eSpeak-NG
+ DRIVER_USAGE = software engine
+ DRIVER_VERSION = 0.1
+ DRIVER_DEVELOPERS = Nicolas Pitre <nico@fluxnic.net>, Ondřej Lysoněk <olysonek@redhat.com>
+-DRIVER_DEPENDENCIES = @speech_libraries_en@
++DRIVER_DEPENDENCIES = $(ESPEAK_NG_LIBS)
+ include $(SRC_TOP)speech.mk
+ 
+ speech.$O:
+-	$(CC) $(DRIVER_CFLAGS) -I$(ESPEAK_NG_ROOT)/include -c $(SRC_DIR)/speech.c
++	$(CC) $(DRIVER_CFLAGS) $(ESPEAK_NG_INCLUDES) -c $(SRC_DIR)/speech.c
+ 
+diff --git a/config.mk.in b/config.mk.in
+index 75b9a94..76ce080 100644
+--- a/config.mk.in
++++ b/config.mk.in
+@@ -400,6 +400,8 @@ SCREEN_DRIVERS = @screen_drivers@
+ LIBBRAILLE_ROOT = @libbraille_root@
+ ESPEAK_ROOT = @espeak_root@
+ ESPEAK_NG_ROOT = @espeak_ng_root@
++ESPEAK_NG_INCLUDES = @espeak_ng_includes@
++ESPEAK_NG_LIBS = @espeak_ng_libs@
+ FLITE_ROOT = @flite_root@
+ FLITE_LANGUAGE = @flite_language@
+ FLITE_LEXICON = @flite_lexicon@
+diff --git a/configure.ac b/configure.ac
+index a6fd4ef..281c9eb 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1807,9 +1807,9 @@ BRLTTY_ARG_DISABLE(
+    BRLTTY_SPEECH_DRIVER([bl], [BrailleLite])
+    BRLTTY_SPEECH_DRIVER([cb], [CombiBraille])
+ 
+-   BRLTTY_IF_PACKAGE([eSpeak-NG], [espeak_ng], [include/espeak-ng/speak_lib.h], [dnl
+-      BRLTTY_SPEECH_DRIVER([en], [eSpeak-NG], [-L$(ESPEAK_NG_ROOT)/lib -lespeak-ng])
+-   ])
++   BRLTTY_IF_PACKAGE([espeak-ng], [espeak_ng], [include/espeak-ng/speak_lib.h], [dnl
++      BRLTTY_SPEECH_DRIVER([en], [eSpeak-NG])
++   ], [include], [lib], [espeak-ng])
+ 
+    BRLTTY_IF_PACKAGE([eSpeak], [espeak], [include/espeak/speak_lib.h], [dnl
+       BRLTTY_SPEECH_DRIVER([es], [eSpeak], [-L$(ESPEAK_ROOT)/lib -lespeak])
