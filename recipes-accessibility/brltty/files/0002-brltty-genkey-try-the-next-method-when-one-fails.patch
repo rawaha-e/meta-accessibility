@@ -1,0 +1,31 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: rawaha-e <219735494+rawaha-e@users.noreply.github.com>
+Date: Tue, 17 Nov 2026 07:07:27 -0500
+Subject: [PATCH 2/2] brltty-genkey: try the next method when one fails
+
+The script runs with "set -e". When a method fails, try() returns the
+failing status, which ends the script right there. On a system without
+mcookie, the first method tried, brltty-genkey exits with status 127
+and never gets to /dev/urandom.
+
+Have try() return success when the method fails, so the loop moves on
+to the next one as intended.
+
+Upstream-Status: Pending
+---
+ brltty-genkey | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/brltty-genkey b/brltty-genkey
+index 43b9584..664e4b2 100755
+--- a/brltty-genkey
++++ b/brltty-genkey
+@@ -38,6 +38,8 @@ try() {
+       logTask "key generated"
+       exit 0
+    }
++
++   return 0
+ }
+ 
+ [ -n "${keyFile}" ] || keyFile="${defaultKeyFile}"

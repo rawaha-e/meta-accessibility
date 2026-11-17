@@ -1,0 +1,14 @@
+[Unit]
+Description=Generate the BrlAPI authorization key
+Documentation=man:brltty(1)
+ConditionPathExists=!@sysconfdir@/brlapi.key
+After=local-fs.target
+
+[Service]
+Type=oneshot
+ExecStart=@bindir@/brltty-genkey
+ExecStartPost=chgrp brlapi @sysconfdir@/brlapi.key
+ExecStartPost=chmod 0640 @sysconfdir@/brlapi.key
+
+[Install]
+WantedBy=multi-user.target
